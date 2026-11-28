@@ -1,0 +1,11 @@
+{
+  "name": "bangladesh-launch-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bangladesh Launch Tracker",
+  "scripts": {
+    "test": "bash tests/run-static-checks.sh",
+    "deploy:backend": "firebase deploy --only database,functions",
+    "deploy:hosting": "firebase deploy --only hosting"
+  }
+}

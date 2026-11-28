@@ -1,0 +1,1928 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#082b45">
+<meta name="description" content="Bangladesh Launch Tracker - লঞ্চ, রুট, ঘাট, সময় ও যাত্রী তথ্য">
+<title>Bangladesh Launch Tracker V2</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+ --navy:#082b45;
+ --navy2:#0d3b59;
+ --blue:#0b638d;
+ --sky:#eaf5fb;
+ --paper:#ffffff;
+ --ink:#142b3b;
+ --muted:#647887;
+ --line:#d9e5ec;
+ --green:#b7e34a;
+ --green2:#e9f8b8;
+ --red:#c83e4d;
+ --orange:#e28a22;
+ --shadow:0 8px 28px rgba(8,43,69,.10);
+ --radius:18px;
+ --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;
+ font-family:"Hind Siliguri",system-ui,sans-serif;
+ background:#f2f7fa;
+ color:var(--ink);
+ padding-bottom:calc(78px + var(--safe-bottom));
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--blue)}
+.topbar{
+ position:sticky;
+ top:0;
+ z-index:1000;
+ background:var(--navy);
+ color:white;
+ padding:12px 16px;
+ box-shadow:0 3px 12px rgba(0,0,0,.16);
+}
+.topbar-inner{
+ max-width:1100px;
+ margin:auto;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{
+ width:42px;height:42px;border-radius:13px;
+ display:grid;place-items:center;
+ background:var(--green);color:var(--navy);
+ font-size:24px;font-weight:700;flex:none;
+}
+.brand-title{font-size:18px;font-weight:700;line-height:1.15}
+.brand-sub{font-size:11px;color:#c8dce8}
+.top-actions{display:flex;gap:7px;align-items:center}
+.icon-btn{
+ border:1px solid rgba(255,255,255,.25);
+ background:rgba(255,255,255,.1);
+ color:white;border-radius:12px;padding:8px 10px;
+}
+.page{max-width:1100px;margin:0 auto;padding:14px}
+.hero{
+ background:linear-gradient(135deg,#082b45,#0b638d);
+ color:white;border-radius:22px;padding:20px;
+ box-shadow:var(--shadow);
+}
+.hero h1{font-size:25px;margin:0 0 5px}
+.hero p{margin:0;color:#d8eaf3;font-size:14px}
+.status-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pill{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:5px 10px;border-radius:999px;
+ background:rgba(255,255,255,.13);
+ color:white;font-size:12px;
+}
+.banner{
+ margin:14px 0;
+ border:2px solid #b8d95b;
+ background:#f3ffd0;
+ color:#31480a;
+ border-radius:16px;padding:13px 15px;
+}
+.banner strong{display:block;font-size:16px}
+.banner small{display:block;margin-top:3px;color:#536c1b}
+.banner-list{display:grid;gap:8px;margin-top:10px}
+.banner-item{
+ background:#fff;border:1px solid #d8e9a2;
+ border-radius:12px;padding:10px;color:#273b08;
+}
+.banner-item b{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.card{
+ background:var(--paper);border:1px solid var(--line);
+ border-radius:var(--radius);padding:15px;box-shadow:var(--shadow);
+ min-width:0;
+}
+.span-12{grid-column:span 12}
+.span-8{grid-column:span 8}
+.span-6{grid-column:span 6}
+.span-4{grid-column:span 4}
+.section-title{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;margin:0 0 12px;
+}
+.section-title h2{font-size:19px;margin:0;color:var(--navy)}
+.section-title small{color:var(--muted)}
+.field{display:grid;gap:5px;margin:9px 0}
+.field label{font-weight:600;font-size:14px}
+.field input,.field select,.field textarea,.searchbox{
+ width:100%;border:1px solid #cbdbe5;background:#fff;
+ border-radius:12px;padding:11px 12px;outline:none;color:var(--ink);
+}
+.field textarea{min-height:92px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus,.searchbox:focus{
+ border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,99,141,.12);
+}
+.row-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+ border:0;border-radius:12px;padding:10px 14px;
+ background:var(--blue);color:white;font-weight:600;
+}
+.btn:hover{filter:brightness(1.05)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.secondary{background:#e8f1f6;color:var(--navy)}
+.btn.green{background:var(--green);color:#20320a}
+.btn.red{background:var(--red);color:white}
+.btn.outline{background:white;border:1px solid var(--line);color:var(--navy)}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tabs{
+ display:flex;gap:7px;overflow:auto;padding:2px 0 10px;
+ scrollbar-width:thin;
+}
+.tab{
+ border:1px solid var(--line);background:white;color:var(--navy);
+ border-radius:999px;padding:8px 13px;white-space:nowrap;
+}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.view{display:none}
+.view.active{display:block}
+.list{display:grid;gap:8px}
+.list-item{
+ border:1px solid var(--line);border-radius:13px;padding:11px;
+ background:#fff;
+}
+.list-item-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.list-item h3{font-size:16px;margin:0;color:var(--navy)}
+.meta{font-size:12px;color:var(--muted);margin-top:4px}
+.tag{
+ display:inline-block;background:#e8f2f7;color:#164866;
+ padding:3px 8px;border-radius:999px;font-size:11px;margin:2px 3px 2px 0;
+}
+.tag.pending{background:#fff2d9;color:#875000}
+.tag.ok{background:#e6f7e9;color:#17632b}
+.tag.warn{background:#ffe8e8;color:#9b2734}
+.empty{
+ padding:18px;text-align:center;color:var(--muted);
+ border:1px dashed #b9cbd6;border-radius:13px;
+}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#f1f7fa;border-radius:13px;padding:12px;text-align:center}
+.stat b{display:block;font-size:23px;color:var(--navy)}
+.stat span{font-size:12px;color:var(--muted)}
+#map{height:360px;border-radius:14px;border:1px solid var(--line);z-index:1}
+.map-note{font-size:12px;color:var(--muted);margin-top:8px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
+th{background:#f0f6f9;color:var(--navy)}
+.rank{font-weight:700;color:var(--blue)}
+.notice{
+ padding:10px 12px;border-radius:12px;background:#edf6fb;
+ color:#194b68;font-size:13px;margin:8px 0;
+}
+.notice.warning{background:#fff4df;color:#805100}
+.notice.error{background:#ffe9e9;color:#8e2630}
+.notice.success{background:#e9f8eb;color:#1b6530}
+.hidden{display:none!important}
+.bottom-nav{
+ position:fixed;bottom:0;left:0;right:0;z-index:1100;
+ background:white;border-top:1px solid var(--line);
+ display:flex;justify-content:space-around;
+ padding:8px 4px calc(8px + var(--safe-bottom));
+ box-shadow:0 -5px 18px rgba(8,43,69,.08);
+}
+.nav-btn{
+ border:0;background:transparent;color:#607583;
+ display:grid;gap:2px;justify-items:center;
+ font-size:10px;min-width:48px;padding:3px;
+}
+.nav-btn span:first-child{font-size:20px}
+.nav-btn.active{color:var(--blue);font-weight:700}
+.modal-backdrop{
+ position:fixed;inset:0;background:rgba(4,20,31,.55);
+ z-index:2000;display:none;align-items:center;justify-content:center;padding:14px;
+}
+.modal-backdrop.show{display:flex}
+.modal{
+ background:white;border-radius:18px;max-width:560px;width:100%;
+ max-height:88vh;overflow:auto;padding:17px;box-shadow:0 18px 60px rgba(0,0,0,.25);
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.modal-head h2{margin:0;font-size:19px;color:var(--navy)}
+.close{border:0;background:#edf3f6;border-radius:10px;padding:7px 10px}
+.footer{text-align:center;color:#81929c;font-size:11px;padding:24px 10px}
+.admin-only{display:none}
+.admin-mode .admin-only{display:block}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+@media(max-width:760px){
+ .page{padding:10px}
+ .span-8,.span-6,.span-4{grid-column:span 12}
+ .hero{padding:17px}
+ .hero h1{font-size:22px}
+ .row-fields{grid-template-columns:1fr}
+ #map{height:310px}
+ .brand-title{font-size:16px}
+ .top-actions .desktop{display:none}
+}
+@media(min-width:761px){
+ body{padding-bottom:20px}
+ .bottom-nav{display:none}
+ .page{padding:20px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+ <div class="topbar-inner">
+  <div class="brand">
+   <div class="brand-mark">🚢</div>
+   <div>
+    <div class="brand-title">Bangladesh Launch Tracker</div>
+    <div class="brand-sub">ভারতের নয় — বাংলাদেশের নৌপথের তথ্য</div>
+   </div>
+  </div>
+  <div class="top-actions">
+   <button class="icon-btn desktop" id="installBtn" type="button">অ্যাপ ইনস্টল</button>
+   <button class="icon-btn" id="loginBtn" type="button">লগইন</button>
+  </div>
+ </div>
+</header>
+<main class="page">
+ <section class="hero">
+  <h1>লঞ্চের তথ্য, রুট ও ঘাট — এক জায়গায়</h1>
+  <p>যাত্রীদের দেওয়া তথ্য যাচাই করে সবার সঙ্গে ভাগ করে নিন। সময়সূচি পরিবর্তনশীল; যাত্রার আগে ঘাটে নিশ্চিত হোন।</p>
+  <div class="status-row">
+   <span class="pill" id="connectionPill">● লোকাল মোড</span>
+   <span class="pill" id="userPill">অতিথি ব্যবহারকারী</span>
+   <span class="pill">V2</span>
+  </div>
+ </section>
+
+ <section class="banner" id="lemonBanner">
+  <strong>🍋 আজকের বিকল্প লঞ্চ / লঞ্চ পরিবর্তনের নোটিশ</strong>
+  <small>এই রুটে এই লঞ্চের জায়গায় আজকে এই লঞ্চ যাবে — যাত্রীদের জমা দেওয়া নোটিশ।</small>
+  <div class="banner-list" id="bannerList"></div>
+ </section>
+
+ <div class="tabs" role="tablist" aria-label="প্রধান বিভাগ">
+  <button class="tab active" data-view="home">হোম</button>
+  <button class="tab" data-view="launches">লঞ্চ ও রুট</button>
+  <button class="tab" data-view="times">সময় তথ্য</button>
+  <button class="tab" data-view="ghats">ঘাট</button>
+  <button class="tab" data-view="mapview">লাইভ ম্যাপ</button>
+  <button class="tab" data-view="community">কমিউনিটি</button>
+  <button class="tab" data-view="leaderboard">লিডারবোর্ড</button>
+  <button class="tab" data-view="admin">অ্যাডমিন</button>
+ </div>
+
+ <section class="view active" id="view-home">
+  <div class="grid">
+   <div class="card span-12">
+    <div class="section-title"><h2>দ্রুত খুঁজুন</h2><small>লঞ্চ / রুট / ঘাট</small></div>
+    <input class="searchbox" id="globalSearch" placeholder="যেমন: নিউ আল বোরাক, ঢাকা, চাঁদপুর..." autocomplete="off">
+    <div class="list" id="globalResults" style="margin-top:10px"></div>
+   </div>
+   <div class="card span-12">
+    <div class="section-title"><h2>অ্যাপের সারসংক্ষেপ</h2><small>বর্তমান ডিভাইসের ডেটা</small></div>
+    <div class="stats">
+     <div class="stat"><b id="statLaunches">0</b><span>লঞ্চের নাম</span></div>
+     <div class="stat"><b id="statGhats">0</b><span>ঘাটের নাম</span></div>
+     <div class="stat"><b id="statReports">0</b><span>জমা তথ্য</span></div>
+    </div>
+    <div class="notice warning">লোকাল মোডে জমা তথ্য শুধু এই ডিভাইসের ব্রাউজারে থাকে। Firebase Config যোগ ও Security Rules ঠিক না করা পর্যন্ত অন্য ব্যবহারকারীর সঙ্গে সিঙ্ক হবে না।</div>
+   </div>
+   <div class="card span-6">
+    <div class="section-title"><h2>নতুন লঞ্চ প্রস্তাব</h2></div>
+    <form id="quickLaunchForm">
+     <div class="field"><label for="quickLaunchName">লঞ্চের নাম</label><input id="quickLaunchName" required maxlength="80" placeholder="লঞ্চের নাম লিখুন"></div>
+     <div class="field"><label for="quickLaunchRoute">রুট (জানা থাকলে)</label><input id="quickLaunchRoute" maxlength="160" placeholder="যেমন: ঢাকা → চাঁদপুর"></div>
+     <button class="btn green" type="submit">প্রস্তাব জমা দিন</button>
+    </form>
+   </div>
+   <div class="card span-6">
+    <div class="section-title"><h2>নতুন ঘাট প্রস্তাব</h2></div>
+    <form id="quickGhatForm">
+     <div class="field"><label for="quickGhatName">ঘাটের নাম</label><input id="quickGhatName" required maxlength="80" placeholder="ঘাটের নাম"></div>
+     <div class="field"><label for="quickGhatArea">এলাকা / জেলা</label><input id="quickGhatArea" maxlength="100" placeholder="এলাকা লিখুন"></div>
+     <button class="btn green" type="submit">ঘাট প্রস্তাব দিন</button>
+    </form>
+   </div>
+  </div>
+ </section>
+
+ <section class="view" id="view-launches">
+  <div class="grid">
+   <div class="card span-12">
+    <div class="section-title"><h2>লঞ্চ ও রুট তালিকা</h2><small id="launchCountLabel"></small></div>
+    <input class="searchbox" id="launchSearch" placeholder="লঞ্চ বা রুট দিয়ে খুঁজুন">
+    <div class="list" id="launchList" style="margin-top:10px"></div>
+   </div>
+   <div class="card span-12">
+    <div class="section-title"><h2>লঞ্চের নাম / রুট প্রস্তাব</h2></div>
+    <form id="launchProposalForm">
+     <div class="row-fields">
+      <div class="field"><label for="proposalLaunch">লঞ্চের নাম</label><input id="proposalLaunch" required maxlength="80"></div>
+      <div class="field"><label for="proposalRoute">রুট (ঐচ্ছিক)</label><input id="proposalRoute" maxlength="180" placeholder="না জানলে ফাঁকা রাখুন"></div>
+     </div>
+     <div class="field"><label for="proposalDetails">তথ্যের উৎস / অতিরিক্ত তথ্য</label><textarea id="proposalDetails" maxlength="500" placeholder="যেখানে দেখেছেন বা যে তথ্য জানেন"></textarea></div>
+     <button class="btn" type="submit">প্রস্তাব জমা দিন</button>
+    </form>
+   </div>
+   <div class="card span-12">
+    <div class="section-title"><h2>নতুন রুটের নাম প্রস্তাব</h2></div>
+    <form id="routeProposalForm">
+     <div class="row-fields">
+      <div class="field"><label for="routeFrom">কোথা থেকে</label><input id="routeFrom" required maxlength="80" placeholder="যেমন: ঢাকা"></div>
+      <div class="field"><label for="routeTo">কোথায়</label><input id="routeTo" required maxlength="80" placeholder="যেমন: চাঁদপুর"></div>
+     </div>
+     <div class="field"><label for="routeDetails">অতিরিক্ত তথ্য (ঐচ্ছিক)</label><textarea id="routeDetails" maxlength="400" placeholder="রুট সম্পর্কে জানা তথ্য"></textarea></div>
+     <button class="btn green" type="submit">রুট প্রস্তাব জমা দিন</button>
+    </form>
+    <div class="section-title" style="margin-top:16px"><h2>অনুমোদিত রুট</h2></div>
+    <div class="list" id="approvedRouteList"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="view" id="view-times">
+  <div class="grid">
+   <div class="card span-6">
+    <div class="section-title"><h2>যাত্রার সময় জমা দিন</h2></div>
+    <form id="timeForm">
+     <div class="field"><label for="timeLaunch">লঞ্চের নাম</label><input id="timeLaunch" required list="launchOptions" placeholder="লঞ্চের নাম"></div>
+     <div class="field"><label for="timeRoute">রুট</label><input id="timeRoute" required placeholder="যেমন: ঢাকা → চাঁদপুর"></div>
+     <div class="row-fields">
+      <div class="field"><label for="departTime">ছাড়ার সময়</label><input id="departTime" type="time"></div>
+      <div class="field"><label for="arriveTime">পৌঁছানোর সময়</label><input id="arriveTime" type="time"></div>
+     </div>
+     <div class="field"><label for="timeDate">যাত্রার তারিখ</label><input id="timeDate" type="date" required></div>
+     <div class="field"><label for="timeNote">নোট (ঐচ্ছিক)</label><textarea id="timeNote" maxlength="300"></textarea></div>
+     <button class="btn" type="submit">সময় তথ্য জমা দিন</button>
+    </form>
+    <div class="notice">কোনো নির্দিষ্ট ছাড়ার বা পৌঁছানোর সময় আগে থেকে বসানো নেই। যাত্রীরা নিজেরা তথ্য দেবেন।</div>
+   </div>
+   <div class="card span-6">
+    <div class="section-title"><h2>জমা দেওয়া সময়ের তথ্য</h2></div>
+    <input class="searchbox" id="timeSearch" placeholder="লঞ্চ / রুট দিয়ে খুঁজুন">
+    <div class="list" id="timeList" style="margin-top:10px"></div>
+   </div>
+   <div class="card span-12">
+    <div class="section-title"><h2>লঞ্চ পরিবর্তনের লেবু ব্যানার</h2></div>
+    <form id="bannerForm">
+     <div class="field"><label for="bannerRoute">রুট</label><input id="bannerRoute" required placeholder="যেমন: ঢাকা → চাঁদপুর"></div>
+     <div class="row-fields">
+      <div class="field"><label for="bannerOld">যে লঞ্চটি যাবে না</label><input id="bannerOld" required></div>
+      <div class="field"><label for="bannerNew">তার বদলে যে লঞ্চ যাবে</label><input id="bannerNew" required></div>
+     </div>
+     <div class="field"><label for="bannerDate">কার্যকর তারিখ</label><input id="bannerDate" type="date" required></div>
+     <div class="field"><label for="bannerReason">কারণ / নোট</label><input id="bannerReason" maxlength="180"></div>
+     <button class="btn green" type="submit">ব্যানার নোটিশ জমা দিন</button>
+    </form>
+   </div>
+  </div>
+ </section>
+
+ <section class="view" id="view-ghats">
+  <div class="grid">
+   <div class="card span-6">
+    <div class="section-title"><h2>ঘাটের তালিকা</h2></div>
+    <input class="searchbox" id="ghatSearch" placeholder="ঘাট বা এলাকা খুঁজুন">
+    <div class="list" id="ghatList" style="margin-top:10px"></div>
+   </div>
+   <div class="card span-6">
+    <div class="section-title"><h2>নতুন ঘাট প্রস্তাব</h2></div>
+    <form id="ghatProposalForm">
+     <div class="field"><label for="ghatName">ঘাটের নাম</label><input id="ghatName" required maxlength="80"></div>
+     <div class="field"><label for="ghatArea">এলাকা / জেলা</label><input id="ghatArea" required maxlength="100"></div>
+     <div class="field"><label for="ghatDetails">বিস্তারিত</label><textarea id="ghatDetails" maxlength="500"></textarea></div>
+     <button class="btn" type="submit">ঘাট প্রস্তাব জমা দিন</button>
+    </form>
+   </div>
+   <div class="card span-12">
+    <div class="section-title"><h2>ঘাটের GPS অবস্থান প্রস্তাব</h2></div>
+    <p class="meta">GPS অনুমতি দিলে বর্তমান অবস্থানটি প্রস্তাবের সঙ্গে যুক্ত হবে। সঠিক ঘাটের পিন Admin যাচাই করে প্রকাশ করবেন।</p>
+    <button class="btn secondary" id="getGhatGps" type="button">আমার অবস্থান নিন</button>
+    <span id="ghatGpsText" class="meta">অবস্থান নেওয়া হয়নি</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="view" id="view-mapview">
+  <div class="card">
+   <div class="section-title"><h2>লঞ্চ / ঘাটের মানচিত্র</h2><small>OpenStreetMap</small></div>
+   <div id="map"></div>
+   <div class="btn-row">
+    <button class="btn secondary" id="locateMe" type="button">আমার অবস্থান</button>
+    <button class="btn secondary" id="refreshMap" type="button">ম্যাপ রিফ্রেশ</button>
+   </div>
+   <div class="map-note">মানচিত্রে বর্তমানে অনুমোদিত ও GPS-সহ জমা পয়েন্ট দেখানো হবে। এই সংস্করণে যাত্রী লোকেশন শেয়ার করতে সম্মতি দিয়ে আলাদা করে শুরু করতে হবে।</div>
+  </div>
+  <div class="card" style="margin-top:12px">
+   <div class="section-title"><h2>লঞ্চে লাইভ লোকেশন শেয়ার</h2></div>
+   <div class="field"><label for="gpsLaunch">লঞ্চের নাম</label><input id="gpsLaunch" list="launchOptions" placeholder="লঞ্চের নাম"></div>
+   <div class="field"><label for="gpsRoute">রুট</label><input id="gpsRoute" placeholder="রুট"></div>
+   <div class="notice warning">লোকেশন শেয়ার করলে আপনার অবস্থান অন্য ব্যবহারকারীরা দেখতে পারেন। শুধু প্রয়োজন হলে এবং নিজের সম্মতিতে চালু করুন।</div>
+   <div class="btn-row">
+    <button class="btn green" id="startGpsShare" type="button">লোকেশন শেয়ার শুরু</button>
+    <button class="btn red" id="stopGpsShare" type="button">শেয়ার বন্ধ</button>
+   </div>
+   <div id="gpsShareStatus" class="meta">লোকেশন শেয়ার বন্ধ আছে।</div>
+  </div>
+ </section>
+
+ <section class="view" id="view-community">
+  <div class="grid">
+   <div class="card span-6">
+    <div class="section-title"><h2>রিপোর্ট / সংশোধনী</h2></div>
+    <form id="reportForm">
+     <div class="field"><label for="reportType">রিপোর্টের ধরন</label>
+      <select id="reportType"><option>ভুল লঞ্চের তথ্য</option><option>ভুল রুট</option><option>ভুল ঘাট</option><option>সময় সংক্রান্ত</option><option>অ্যাপের সমস্যা</option><option>অন্যান্য</option></select>
+     </div>
+     <div class="field"><label for="reportMessage">বিস্তারিত (৫–৫০০ অক্ষর)</label><textarea id="reportMessage" required minlength="5" maxlength="500"></textarea></div>
+     <button class="btn" type="submit">রিপোর্ট জমা দিন</button>
+    </form>
+   </div>
+   <div class="card span-6">
+    <div class="section-title"><h2>কমিউনিটি আলোচনা</h2></div>
+    <form id="chatForm">
+     <div class="field"><label for="chatRoom">আলোচনার বিষয়</label>
+      <select id="chatRoom"><option>সাধারণ আলোচনা</option><option>ঢাকা–চাঁদপুর</option><option>ঢাকা–ভোলা</option><option>ঢাকা–বরিশাল</option><option>অন্যান্য রুট</option></select>
+     </div>
+     <div class="field"><label for="chatMessage">বার্তা</label><textarea id="chatMessage" required maxlength="500"></textarea></div>
+     <button class="btn" type="submit">বার্তা পাঠান</button>
+    </form>
+   </div>
+   <div class="card span-12">
+    <div class="section-title"><h2>সাম্প্রতিক কমিউনিটি তথ্য</h2></div>
+    <div class="list" id="communityList"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="view" id="view-leaderboard">
+  <div class="card">
+   <div class="section-title"><h2>অবদানকারীদের লিডারবোর্ড</h2><small>অনুমোদিত তথ্যের ভিত্তিতে</small></div>
+   <div class="notice">শুধু Admin-অনুমোদিত দৈনিক লঞ্চ শিডিউল পোস্টে পয়েন্ট যোগ হবে। সব ব্যবহারকারীর নাম তালিকায় থাকবে; সর্বোচ্চ পয়েন্টধারী ১০ জন শীর্ষ ১০।</div>
+   <div class="table-wrap">
+    <table>
+     <thead><tr><th>র‍্যাঙ্ক</th><th>ব্যবহারকারী</th><th>পয়েন্ট</th><th>অনুমোদিত পোস্ট</th></tr></thead>
+     <tbody id="leaderboardBody"><tr><td colspan="4">এখনো কোনো অবদান নেই।</td></tr></tbody>
+    </table>
+   </div>
+  </div>
+ </section>
+
+ <section class="view" id="view-admin">
+  <div class="grid">
+   <div class="card span-12">
+    <div class="section-title"><h2>Admin কন্ট্রোল প্যানেল</h2><small id="adminStatus">প্রবেশ সীমাবদ্ধ</small></div>
+    <div class="notice warning">নিরাপত্তার জন্য Firebase UID দিয়ে Admin নির্ধারণ করতে হবে। শুধু ইমেইল লুকিয়ে বা HTML-এ পাসওয়ার্ড রেখে Admin নিরাপদ হয় না। নিচের Config ও Security Rules না বসালে Admin ফিচার লোকাল পরীক্ষামাত্র।</div>
+    <div class="field"><label for="adminCode">লোকাল ডেমো অ্যাডমিন কোড</label><input id="adminCode" type="password" autocomplete="off" placeholder="ডেমো কোড"></div>
+    <div class="btn-row"><button class="btn" id="demoAdminLogin" type="button">ডেমো অ্যাডমিন মোড</button><button class="btn secondary" id="adminLogout" type="button">লগআউট</button></div>
+    <p class="meta">ডেমো কোড: <b>DEMO-ADMIN-2026</b> — এটি নিরাপদ অনলাইন Admin পাসওয়ার্ড নয়; প্রকাশিত ফাইল থেকে যে কেউ দেখতে পারে।</p>
+   </div>
+   <div class="card span-6 admin-only">
+    <div class="section-title"><h2>প্রস্তাব যাচাই</h2></div>
+    <div id="pendingList" class="list"></div>
+   </div>
+   <div class="card span-6 admin-only">
+    <div class="section-title"><h2>ঘাট যাচাই</h2></div>
+    <div id="pendingGhats" class="list"></div>
+   </div>
+   <div class="card span-6 admin-only">
+    <div class="section-title"><h2>রুট যাচাই</h2></div>
+    <div id="pendingRoutes" class="list"></div>
+   </div>
+   <div class="card span-6 admin-only">
+    <div class="section-title"><h2>রিপোর্ট পর্যালোচনা</h2></div>
+    <div id="adminReports" class="list"></div>
+   </div>
+   <div class="card span-6 admin-only">
+    <div class="section-title"><h2>অনুমোদিত শিডিউল ও পয়েন্ট</h2></div>
+    <div id="adminTimes" class="list"></div>
+   </div>
+   <div class="card span-12 admin-only">
+    <div class="section-title"><h2>ডেটা ব্যাকআপ / রিস্টোর</h2></div>
+    <div class="btn-row">
+     <button class="btn secondary" id="exportData" type="button">JSON ব্যাকআপ ডাউনলোড</button>
+     <label class="btn outline" for="importData">JSON ব্যাকআপ ইমপোর্ট</label>
+     <input id="importData" type="file" accept="application/json" class="hidden">
+     <button class="btn red" id="resetLocal" type="button">লোকাল ডেটা রিসেট</button>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <datalist id="launchOptions"></datalist>
+ <div class="footer">Bangladesh Launch Tracker V2 · তথ্য যাত্রীদের অবদান; যাত্রার আগে কর্তৃপক্ষের সঙ্গে যাচাই করুন।</div>
+</main>
+
+<nav class="bottom-nav" aria-label="নেভিগেশন">
+ <button class="nav-btn active" data-view="home"><span>⌂</span><span>হোম</span></button>
+ <button class="nav-btn" data-view="launches"><span>🚢</span><span>লঞ্চ</span></button>
+ <button class="nav-btn" data-view="times"><span>◷</span><span>সময়</span></button>
+ <button class="nav-btn" data-view="ghats"><span>⚓</span><span>ঘাট</span></button>
+ <button class="nav-btn" data-view="mapview"><span>⌖</span><span>ম্যাপ</span></button>
+ <button class="nav-btn" data-view="community"><span>☷</span><span>আরও</span></button>
+</nav>
+
+<div class="modal-backdrop" id="loginModal">
+ <div class="modal">
+  <div class="modal-head"><h2>ব্যবহারকারী লগইন</h2><button class="close" data-close="loginModal">বন্ধ</button></div>
+  <p>Firebase Config যুক্ত হলে Google Login চালু হবে। এখন লোকাল অতিথি হিসেবে ব্যবহার করা যাবে।</p>
+  <button class="btn" id="googleLogin" type="button">Google দিয়ে লগইন</button>
+  <button class="btn secondary" id="guestContinue" type="button">অতিথি হিসেবে চালিয়ে যান</button>
+  <div id="loginMessage" class="notice warning">Firebase এখনো কনফিগার করা হয়নি।</div>
+ </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+/* =========================================================
+   BANGLADESH LAUNCH TRACKER V2
+   Single-file application shell
+   Firebase config is intentionally left blank.
+   ========================================================= */
+
+/* ---------------------------
+   01. FIREBASE CONFIGURATION
+---------------------------- */
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+const FIREBASE_READY = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.databaseURL &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId
+);
+
+const ADMIN_UIDS = [
+  // Firebase Console থেকে নিজের Auth UID নিয়ে এখানে বসাতে হবে।
+  // উদাহরণ: "YOUR_FIREBASE_AUTH_UID"
+];
+
+const APP_VERSION = "2.0.0";
+const STORAGE_KEY = "blt_v2_data";
+const USER_KEY = "blt_v2_user";
+const GPS_EXPIRY_MS = 20 * 60 * 1000;
+
+/* ---------------------------
+   02. SAFE DOM HELPERS
+---------------------------- */
+const $ = (selector, root=document) => root.querySelector(selector);
+const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
+
+function escapeHtml(value=""){
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[char]));
+}
+
+function cleanText(value, max=500){
+  return String(value ?? "").trim().slice(0,max);
+}
+
+function makeId(prefix="item"){
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
+}
+
+function formatDate(value){
+  if(!value) return "তারিখ দেওয়া হয়নি";
+  try{
+    return new Date(value + "T00:00:00").toLocaleDateString("bn-BD");
+  }catch{
+    return value;
+  }
+}
+
+function nowIso(){
+  return new Date().toISOString();
+}
+
+function showToast(message, type="success"){
+  const node = document.createElement("div");
+  node.className = `notice ${type}`;
+  node.textContent = message;
+  node.style.position = "fixed";
+  node.style.left = "14px";
+  node.style.right = "14px";
+  node.style.bottom = "88px";
+  node.style.zIndex = "3000";
+  node.style.boxShadow = "var(--shadow)";
+  document.body.appendChild(node);
+  setTimeout(()=>node.remove(),3200);
+}
+
+function setText(selector,value){
+  const node=$(selector);
+  if(node) node.textContent=value;
+}
+
+/* ---------------------------
+   03. SEED LAUNCH DATABASE
+   Only launch names and route names.
+   No fares, phone numbers or preset times.
+---------------------------- */
+const seedLaunches = [
+  ["নিউ আল বোরাক","ঢাকা → চাঁদপুর → ঈদগাহফেরীঘাট"],
+  ["বোগদাদিয়া-৮","ঈদগাহফেরীঘাট → চাঁদপুর → ঢাকা"],
+  ["ঈগল-৯","ঈদগাহফেরীঘাট → চাঁদপুর → ঢাকা"],
+  ["স্বর্ণদীপ-৭","ঢাকা → চাঁদপুর / ঈদগাহফেরীঘাট"],
+  ["মেঘনা রাণী-৭","ঢাকা ↔ চাঁদপুর"],
+  ["নড়িয়া-৫","ঢাকা ↔ নড়িয়া"],
+  ["লামিয়া-২","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["ঝান্ডা-২","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["আওলাদ-২","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["সেভেন-সি","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["আওলাদ-৬","ঢাকা ↔ হাতুরিয়া"],
+  ["স্বর্ণদীপ-৮","ঢাকা ↔ হাতুরিয়া"],
+  ["মিরাজ-১","ঢাকা ↔ সুরেশ্বর / মুলফতগঞ্জ / নড়িয়া"],
+  ["ময়ূর-৭","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["ময়ূর-১০","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["আল বোরাক","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["ঈগল-১০","ঢাকা ↔ দামুদ্যা"],
+  ["আওলাদ","ঢাকা ↔ দামুদ্যা"],
+  ["কাজল","ঢাকা ↔ দামুদ্যা"],
+  ["সাব্বির-৩","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["জামাল-৮","ঢাকা ↔ ঈদগাহফেরীঘাট / খেপুপাড়া"],
+  ["জামাল-৯","ঢাকা ↔ ঈদগাহফেরীঘাট"],
+  ["ইমাম হাসান","ঢাকা ↔ চাঁদপুর"],
+  ["সোনারতরী-২","ঢাকা ↔ চাঁদপুর"],
+  ["বোগদাদিয়া-৭","ঢাকা ↔ চাঁদপুর"],
+  ["মিতালী-৭","ঢাকা ↔ চাঁদপুর"],
+  ["জাম জাম-১","ঢাকা ↔ চাঁদপুর"],
+  ["ইমাম হাসান-৭","ঢাকা ↔ চাঁদপুর"],
+  ["ইমাম হাসান-৫","ঢাকা ↔ চাঁদপুর"],
+  ["ঈগল-৪","ঢাকা ↔ চাঁদপুর"],
+  ["ঈগল-৩","ঢাকা ↔ চাঁদপুর"],
+  ["সোনারতরী-৩","ঢাকা ↔ চাঁদপুর"],
+  ["জামাল-১","ঢাকা ↔ চাঁদপুর"],
+  ["বোগদাদিয়া-১৩","ঢাকা ↔ চাঁদপুর"],
+  ["আবে জমজম-৭","ঢাকা ↔ চাঁদপুর"],
+  ["রাফ রাফ-৭","ঢাকা ↔ চাঁদপুর"],
+  ["পুবালী-৬","ঢাকা ↔ পায়রাবন্দর / কুয়াকাটা"],
+  ["পুবালী-৯","ঢাকা ↔ চর মনতাজ"],
+  ["ইয়াদ-৭","পায়রাবন্দর / কুয়াকাটা → ঢাকা"],
+  ["রেডসান-৫","চর মনতাজ → ঢাকা"],
+  ["পুবালী-১","ঢাকা → চাঁদপুর → বরিশাল → বরগুনা"],
+  ["আথৈ-১","বরগুনা → বরিশাল → চাঁদপুর → ঢাকা"],
+  ["দোয়েল পাখি-১০","ঢাকা ↔ ইলিশা"],
+  ["দোয়েল পাখি-৮","ঢাকা ↔ ইলিশা"],
+  ["কর্ণফুলী-১৪","ঢাকা ↔ ইলিশা"],
+  ["ফারহান-৯","ঢাকা ↔ ইলিশা"],
+  ["তরঙ্গ-৭","ঢাকা ↔ উলানিয়া / কালীগঞ্জ ↔ ইলিশা"],
+  ["সুরভী-৮","ঢাকা ↔ ইলিশা"],
+  ["আল ওয়ালিদ-৪","ঢাকা ↔ ইলিশা"],
+  ["সম্পদ","ঢাকা ↔ ইলিশা"],
+  ["কর্ণফুলী-৪","ঢাকা ↔ ইলিশা"],
+  ["ফারহান-৩","ঢাকা ↔ ইলিশা"],
+  ["ফারহান-৪","হাতিয়া → ঢাকা"],
+  ["তাসরিফ-১","ঢাকা → হাতিয়া"],
+  ["তাসরিফ-২","ঢাকা ↔ ইলিশা"],
+  ["রাজারহাট-বি","ঢাকা ↔ ইলিশা"],
+  ["কর্ণফুলী","ঢাকা ↔ ইলিশা"],
+  ["আসা যাওয়া-২","ঢাকা ↔ ইলিশা"],
+  ["পুবালী-১২","ঢাকা ↔ ইলিশা"],
+  ["পুবালী-৫","ঢাকা ↔ ইলিশা"],
+  ["কার্নিভাল ক্রুজ","ঢাকা ↔ ইলিশা"],
+  ["দোয়েল পাখি-১","ঢাকা ↔ ইলিশা"],
+  ["আরাফাত-৭","ঢাকা ↔ ইলিশা"],
+  ["যুবরাজ-৭","ঢাকা ↔ ইলিশা"],
+  ["সাফিন সাত্তার খান","ঢাকা ↔ ইলিশা"],
+  ["আসা যাওয়া-৪","ঢাকা ↔ ইলিশা"],
+  ["কর্ণফুলী-১১","ঢাকা ↔ ইলিশা"],
+  ["কর্ণফুলী-৩","ঢাকা ↔ ইলিশা"],
+  ["আবে জমজম-৫","ইলিশা → ঢাকা"],
+  ["তরঙ্গ-৭ / জাম জাম-৫","ঢাকা → উলানিয়া / কালীগঞ্জ → ইলিশা"],
+  ["মহারাজ-৭","ঢাকা → শৌলা / হিজলা / ভাসানচর"],
+  ["রাজহাঁস-৮","ভাসানচর → ঢাকা"],
+  ["গ্লোরি অব শ্রীনগর-৮","ঢাকা → ধুলিয়া → দেউলা → দেবীরচর → নাজিরপুর → লালমোহন"],
+  ["পারাবত-১৮","ঢাকা → বরিশাল"],
+  ["সুন্দরবন-১৬","ঢাকা → বরিশাল"],
+  ["প্রিন্স আওলাদ-১০","ঢাকা → বরিশাল"],
+  ["শুভরাজ-৯","বরিশাল → ঢাকা"],
+  ["পারাবত-১১","বরিশাল → ঢাকা"],
+  ["মানামী","বরিশাল → ঢাকা"],
+  ["আচল-৬","ঢাকা → নন্দীবাজার"],
+  ["ইয়াদ-৩","নন্দীবাজার → ঢাকা"],
+  ["মিতালী-৪","ঢাকা → মুলাদী"],
+  ["সম্রাট-২","মুলাদী → ঢাকা"],
+  ["সুন্দরবন-১৪","ঢাকা → পটুয়াখালী"],
+  ["সুন্দরবন-১৫","পটুয়াখালী → ঢাকা"],
+  ["ঈগল-৮","ঢাকা → কালাইয়া"],
+  ["ধুলিয়া-১","কালাইয়া → ঢাকা"],
+  ["তাসরিফ-৪","ঢাকা → চরফ্যাশন"],
+  ["কর্ণফুলী-১২","চরফ্যাশন → ঢাকা"],
+  ["শ্রীনগর-৮","ঢাকা → লালমোহন"],
+  ["মানিক-১১","লালমোহন → ঢাকা"],
+  ["ইয়াদ-০","ঢাকা → ঘোষেরহাট"],
+  ["জাকির সম্রাট-৪","ঘোষেরহাট → ঢাকা"],
+  ["প্রিন্স রাসেল-৫","ঢাকা → বোরহানউদ্দিন"],
+  ["মানিক-১","বোরহানউদ্দিন → ঢাকা"],
+  ["প্রিন্স আওলাদ-০","ঢাকা ↔ দামুদ্যা"],
+  ["নাঈম মীম-২","ঢাকা → মতলব"],
+  ["প্রিন্স সাদিম-৭","রুট জানা নেই"],
+  ["নাঈম মীম-৭","রুট জানা নেই"],
+  ["জুনায়েদ-৫","ঢাকা → নড়িয়া (যাচাই প্রয়োজন)"],
+  ["জুনায়েদ","সুরেশ্বর (গন্তব্য যাচাই প্রয়োজন)"]
+];
+
+/* ---------------------------
+   04. SEED GHAT DATABASE
+---------------------------- */
+const seedGhats = [
+ "সদরঘাট","চাঁদপুর লঞ্চঘাট","ঈদগাহফেরীঘাট","বয়ারচর চেয়ারম্যান ঘাট",
+ "নলচিরা ঘাট","হাতুরিয়া ঘাট","সুরেশ্বর ঘাট","মুলফতগঞ্জ ঘাট","নড়িয়া ঘাট",
+ "দামুদ্যা ঘাট","পায়রাবন্দর ঘাট","খেপুপাড়া ঘাট","চর মনতাজ ঘাট",
+ "ইলিশা ঘাট","উলানিয়া ঘাট","কালীগঞ্জ ঘাট","হিজলা ঘাট","ভাসানচর ঘাট",
+ "ধুলিয়া ঘাট","দেউলা ঘাট","দেবীরচর ঘাট","নাজিরপুর ঘাট","লালমোহন ঘাট",
+ "বরিশাল লঞ্চঘাট","বরগুনা লঞ্চঘাট","নন্দীবাজার ঘাট","মুলাদী ঘাট",
+ "পটুয়াখালী লঞ্চঘাট","কালাইয়া ঘাট","চরফ্যাশন ঘাট","ঘোষেরহাট ঘাট",
+ "বোরহানউদ্দিন ঘাট","মতলব ঘাট","শৌলা ঘাট"
+];
+
+/* ---------------------------
+   05. INITIAL APP STATE
+---------------------------- */
+const defaultData = {
+ version:APP_VERSION,
+ launches:seedLaunches.map(([name,route])=>({
+  id:makeId("launch"),name,route,status:"approved",source:"seed",createdAt:nowIso()
+ })),
+ ghats:seedGhats.map(name=>({
+  id:makeId("ghat"),name,area:"বাংলাদেশ",status:"approved",source:"seed",createdAt:nowIso()
+ })),
+ proposals:[],
+ ghatProposals:[],
+ routeProposals:[],
+ routes:[],
+ times:[],
+ banners:[],
+ reports:[],
+ chats:[],
+ gpsSessions:[],
+ users:[],
+ scheduleApprovals:[],
+ points:[],
+ lastReportAt:0,
+ lastChatAt:0
+};
+
+function loadData(){
+ try{
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw) return structuredClone(defaultData);
+  const parsed=JSON.parse(raw);
+  const merged={...structuredClone(defaultData),...parsed};
+  merged.routeProposals=Array.isArray(merged.routeProposals)?merged.routeProposals:[];
+  merged.routes=Array.isArray(merged.routes)?merged.routes:[];
+  return merged;
+ }catch(error){
+  console.warn("Local data could not be loaded",error);
+  return structuredClone(defaultData);
+ }
+}
+
+let data=loadData();
+let currentUser={
+ uid:"guest-local",
+ displayName:"অতিথি ব্যবহারকারী",
+ email:"",
+ isAdmin:false
+};
+let isDemoAdmin=false;
+let map=null;
+let mapMarkers=[];
+let gpsWatchId=null;
+let currentGps=null;
+let deferredInstallPrompt=null;
+
+function saveData(){
+ data.version=APP_VERSION;
+ localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+ updateStats();
+ renderAll();
+}
+
+function ensureUserRecord(){
+ let found=data.users.find(user=>user.uid===currentUser.uid);
+ if(!found){
+  found={
+   uid:currentUser.uid,
+   displayName:currentUser.displayName || "অতিথি",
+   points:0,
+   approvedPosts:0,
+   createdAt:nowIso()
+  };
+  data.users.push(found);
+ }else{
+  found.displayName=currentUser.displayName || found.displayName;
+ }
+}
+
+ensureUserRecord();
+
+/* ---------------------------
+   06. VIEW NAVIGATION
+---------------------------- */
+function openView(name){
+ $$(".view").forEach(view=>view.classList.toggle("active",view.id===`view-${name}`));
+ $$(".tab").forEach(button=>button.classList.toggle("active",button.dataset.view===name));
+ $$(".nav-btn").forEach(button=>button.classList.toggle("active",button.dataset.view===name));
+ if(name==="mapview") setTimeout(initMap,120);
+ if(name==="admin") renderAdmin();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+$$("[data-view]").forEach(button=>{
+ button.addEventListener("click",()=>openView(button.dataset.view));
+});
+
+/* ---------------------------
+   07. LOOKUP AND RENDERING
+---------------------------- */
+function uniqueLaunches(){
+ const seen=new Set();
+ return data.launches.filter(item=>{
+  const key=item.name.trim().toLocaleLowerCase("bn");
+  if(seen.has(key)) return false;
+  seen.add(key);
+  return true;
+ });
+}
+
+function renderLaunchOptions(){
+ const list=$("#launchOptions");
+ list.innerHTML=uniqueLaunches().map(item=>`<option value="${escapeHtml(item.name)}"></option>`).join("");
+}
+
+function renderLaunches(query=""){
+ const q=query.toLocaleLowerCase("bn");
+ const items=uniqueLaunches().filter(item=>
+  `${item.name} ${item.route}`.toLocaleLowerCase("bn").includes(q)
+ );
+ $("#launchCountLabel").textContent=`${items.length}টি`;
+ $("#launchList").innerHTML=items.length?items.map(item=>`
+  <article class="list-item">
+   <div class="list-item-head">
+    <div><h3>${escapeHtml(item.name)}</h3><div class="meta">${escapeHtml(item.route || "রুট জমা হয়নি")}</div></div>
+    <span class="tag ${item.status==="approved"?"ok":"pending"}">${item.status==="approved"?"অনুমোদিত":"যাচাইাধীন"}</span>
+   </div>
+  </article>`).join(""):`<div class="empty">কোনো লঞ্চ পাওয়া যায়নি। নতুন নাম প্রস্তাব করতে পারেন।</div>`;
+}
+
+function renderGhats(query=""){
+ const q=query.toLocaleLowerCase("bn");
+ const items=data.ghats.filter(item=>
+  `${item.name} ${item.area||""}`.toLocaleLowerCase("bn").includes(q)
+ );
+ $("#ghatList").innerHTML=items.length?items.map(item=>`
+  <article class="list-item">
+   <div class="list-item-head">
+    <div><h3>${escapeHtml(item.name)}</h3><div class="meta">${escapeHtml(item.area||"এলাকা দেওয়া হয়নি")}</div></div>
+    <span class="tag ${item.status==="approved"?"ok":"pending"}">${item.status==="approved"?"যাচাইকৃত":"যাচাইাধীন"}</span>
+   </div>
+  </article>`).join(""):`<div class="empty">ঘাট পাওয়া যায়নি। নতুন ঘাট প্রস্তাব করুন।</div>`;
+}
+
+function renderTimes(query=""){
+ const q=query.toLocaleLowerCase("bn");
+ const items=[...data.times].reverse().filter(item=>
+  `${item.launch} ${item.route} ${item.note}`.toLocaleLowerCase("bn").includes(q)
+ );
+ $("#timeList").innerHTML=items.length?items.map(item=>`
+  <article class="list-item">
+   <div class="list-item-head"><div>
+    <h3>${escapeHtml(item.launch)}</h3>
+    <div class="meta">${escapeHtml(item.route)} · ${formatDate(item.date)}</div>
+   </div><span class="tag ${item.approved?"ok":"pending"}">${item.approved?"যাচাইকৃত":"যাচাইাধীন"}</span></div>
+   <div class="meta">ছাড়ে: ${escapeHtml(item.departure||"জানা নেই")} · পৌঁছায়: ${escapeHtml(item.arrival||"জানা নেই")}</div>
+   ${item.note?`<div class="meta">${escapeHtml(item.note)}</div>`:""}
+  </article>`).join(""):`<div class="empty">এখনো কোনো সময়ের তথ্য জমা হয়নি।</div>`;
+}
+
+function renderBanners(){
+ const active=data.banners.filter(item=>!item.status || item.status==="approved");
+ $("#bannerList").innerHTML=active.length?active.slice(-6).reverse().map(item=>`
+  <div class="banner-item">
+   <b>${escapeHtml(item.route)}</b>
+   <span>${escapeHtml(item.oldLaunch)}-এর বদলে <strong>${escapeHtml(item.newLaunch)}</strong> যাবে</span>
+   <small>${formatDate(item.date)} ${item.reason?`· ${escapeHtml(item.reason)}`:""}</small>
+  </div>`).join(""):`<div class="banner-item">এখনো কোনো পরিবর্তনের নোটিশ নেই।</div>`;
+}
+
+function renderCommunity(){
+ const all=[
+  ...data.reports.map(item=>({...item,kind:"রিপোর্ট"})),
+  ...data.chats.map(item=>({...item,kind:`আলোচনা: ${item.room}`})),
+  ...data.proposals.map(item=>({...item,kind:"লঞ্চ প্রস্তাব"}))
+ ].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).slice(0,30);
+ $("#communityList").innerHTML=all.length?all.map(item=>`
+  <article class="list-item">
+   <div class="list-item-head"><h3>${escapeHtml(item.kind)}</h3><span class="tag">${escapeHtml(item.status||"জমা")}</span></div>
+   <div>${escapeHtml(item.message||item.details||item.name||"তথ্য")}</div>
+   <div class="meta">${escapeHtml(item.author||"অতিথি")} · ${new Date(item.createdAt).toLocaleString("bn-BD")}</div>
+  </article>`).join(""):`<div class="empty">এখনো কোনো কমিউনিটি পোস্ট নেই।</div>`;
+}
+
+function renderLeaderboard(){
+ const sorted=[...data.users].sort((a,b)=>(b.points||0)-(a.points||0));
+ const top=sorted.slice(0,10);
+ $("#leaderboardBody").innerHTML=top.length?top.map((user,index)=>`
+  <tr><td class="rank">${index+1}</td><td>${escapeHtml(user.displayName||"অতিথি")}</td><td>${user.points||0}</td><td>${user.approvedPosts||0}</td></tr>`).join(""):`<tr><td colspan="4">এখনো কোনো অবদান নেই।</td></tr>`;
+}
+
+function updateStats(){
+ setText("#statLaunches",uniqueLaunches().length);
+ setText("#statGhats",data.ghats.length);
+ setText("#statReports",data.reports.length+data.proposals.length+data.times.length);
+}
+
+function renderAll(){
+ renderLaunchOptions();
+ renderLaunches($("#launchSearch")?.value||"");
+ renderGhats($("#ghatSearch")?.value||"");
+ renderApprovedRoutes();
+ renderTimes($("#timeSearch")?.value||"");
+ renderBanners();
+ renderCommunity();
+ renderLeaderboard();
+ renderAdmin();
+ updateStats();
+}
+
+/* ---------------------------
+   08. GLOBAL SEARCH
+---------------------------- */
+function renderGlobalSearch(query=""){
+ const q=query.toLocaleLowerCase("bn");
+ if(!q){$("#globalResults").innerHTML="";return;}
+ const launches=uniqueLaunches().filter(item=>`${item.name} ${item.route}`.toLocaleLowerCase("bn").includes(q)).slice(0,8);
+ const ghats=data.ghats.filter(item=>`${item.name} ${item.area}`.toLocaleLowerCase("bn").includes(q)).slice(0,8);
+ const rows=[
+  ...launches.map(item=>`<div class="list-item"><b>🚢 ${escapeHtml(item.name)}</b><div class="meta">${escapeHtml(item.route)}</div></div>`),
+  ...ghats.map(item=>`<div class="list-item"><b>⚓ ${escapeHtml(item.name)}</b><div class="meta">${escapeHtml(item.area||"")}</div></div>`)
+ ];
+ $("#globalResults").innerHTML=rows.length?rows.join(""):`<div class="empty">কিছু পাওয়া যায়নি।</div>`;
+}
+
+$("#globalSearch").addEventListener("input",event=>renderGlobalSearch(event.target.value));
+$("#launchSearch").addEventListener("input",event=>renderLaunches(event.target.value));
+$("#ghatSearch").addEventListener("input",event=>renderGhats(event.target.value));
+$("#timeSearch").addEventListener("input",event=>renderTimes(event.target.value));
+
+function renderApprovedRoutes(){
+ const el=$("#approvedRouteList");
+ if(!el)return;
+ const routes=data.routes.filter(item=>item.status==="approved");
+ el.innerHTML=routes.length?routes.map(item=>`<article class="list-item"><b>${escapeHtml(item.from)} → ${escapeHtml(item.to)}</b></article>`).join(""):`<div class="empty">এখনো কোনো রুট অনুমোদিত হয়নি।</div>`;
+}
+
+/* ---------------------------
+   09. PROPOSAL SUBMISSION
+---------------------------- */
+function addLaunchProposal(name,route="",details=""){
+ const safeName=cleanText(name,80);
+ const safeRoute=cleanText(route,180);
+ if(!safeName) throw new Error("লঞ্চের নাম লিখুন।");
+ const duplicate=data.launches.some(item=>item.name.toLowerCase()===safeName.toLowerCase());
+ const proposal={
+  id:makeId("proposal"),
+  name:safeName,
+  route:safeRoute,
+  details:cleanText(details,500),
+  status:"pending",
+  author:currentUser.displayName,
+  authorUid:currentUser.uid,
+  createdAt:nowIso()
+ };
+ if(!duplicate) data.proposals.push(proposal);
+ else if(safeRoute){
+  data.proposals.push({...proposal,details:`বিদ্যমান লঞ্চের রুট সংশোধনের প্রস্তাব। ${proposal.details}`});
+ }else{
+  throw new Error("এই লঞ্চের নাম তালিকায় আগে থেকেই আছে।");
+ }
+ saveData();
+ showToast("লঞ্চের প্রস্তাব জমা হয়েছে। Admin যাচাই করবেন।");
+}
+
+$("#quickLaunchForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ try{
+  addLaunchProposal($("#quickLaunchName").value,$("#quickLaunchRoute").value);
+  event.target.reset();
+ }catch(error){showToast(error.message,"error");}
+});
+
+$("#launchProposalForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ try{
+  addLaunchProposal($("#proposalLaunch").value,$("#proposalRoute").value,$("#proposalDetails").value);
+  event.target.reset();
+ }catch(error){showToast(error.message,"error");}
+});
+
+function addRouteProposal(from,to,details=""){
+ const safeFrom=cleanText(from,80), safeTo=cleanText(to,80);
+ if(!safeFrom||!safeTo)throw new Error("রুটের শুরু ও গন্তব্য লিখুন।");
+ if(safeFrom.toLowerCase()===safeTo.toLowerCase())throw new Error("শুরু ও গন্তব্য একই হতে পারবে না।");
+ const exists=data.routes.some(item=>item.from.toLowerCase()===safeFrom.toLowerCase()&&item.to.toLowerCase()===safeTo.toLowerCase());
+ const pending=data.routeProposals.some(item=>item.from.toLowerCase()===safeFrom.toLowerCase()&&item.to.toLowerCase()===safeTo.toLowerCase()&&item.status==="pending");
+ if(exists||pending)throw new Error("এই রুটটি আগে থেকেই আছে অথবা যাচাইয়ের অপেক্ষায় আছে।");
+ data.routeProposals.push({id:makeId("routeproposal"),from:safeFrom,to:safeTo,details:cleanText(details,400),status:"pending",author:currentUser.displayName,authorUid:currentUser.uid,createdAt:nowIso()});
+ saveData();showToast("রুটের প্রস্তাব জমা হয়েছে। Admin যাচাই করবেন।");
+}
+$("#routeProposalForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ try{addRouteProposal($("#routeFrom").value,$("#routeTo").value,$("#routeDetails").value);event.target.reset();}
+ catch(error){showToast(error.message,"error");}
+});
+
+/* ---------------------------
+   10. GHAT PROPOSALS
+---------------------------- */
+let ghatGpsPosition=null;
+
+function addGhatProposal(name,area,details="",coords=null){
+ const safeName=cleanText(name,80);
+ if(!safeName) throw new Error("ঘাটের নাম লিখুন।");
+ const exists=data.ghats.some(item=>item.name.toLowerCase()===safeName.toLowerCase());
+ const already=data.ghatProposals.some(item=>item.name.toLowerCase()===safeName.toLowerCase() && item.status==="pending");
+ if(exists || already) throw new Error("এই ঘাটের নাম তালিকায় আছে অথবা যাচাইয়ের অপেক্ষায় আছে।");
+ data.ghatProposals.push({
+  id:makeId("ghatproposal"),
+  name:safeName,
+  area:cleanText(area,100),
+  details:cleanText(details,500),
+  lat:coords?.lat ?? null,
+  lng:coords?.lng ?? null,
+  status:"pending",
+  author:currentUser.displayName,
+  authorUid:currentUser.uid,
+  createdAt:nowIso()
+ });
+ saveData();
+ showToast("ঘাটের প্রস্তাব জমা হয়েছে।");
+}
+
+$("#quickGhatForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ try{
+  addGhatProposal($("#quickGhatName").value,$("#quickGhatArea").value);
+  event.target.reset();
+ }catch(error){showToast(error.message,"error");}
+});
+
+$("#ghatProposalForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ try{
+  addGhatProposal($("#ghatName").value,$("#ghatArea").value,$("#ghatDetails").value,ghatGpsPosition);
+  event.target.reset();
+ }catch(error){showToast(error.message,"error");}
+});
+
+$("#getGhatGps").addEventListener("click",()=>{
+ if(!navigator.geolocation){showToast("এই ব্রাউজারে GPS নেই।","error");return;}
+ navigator.geolocation.getCurrentPosition(position=>{
+  ghatGpsPosition={lat:position.coords.latitude,lng:position.coords.longitude};
+  setText("#ghatGpsText",`${ghatGpsPosition.lat.toFixed(5)}, ${ghatGpsPosition.lng.toFixed(5)}`);
+  showToast("ঘাটের প্রস্তাবের জন্য GPS নেওয়া হয়েছে।");
+ },()=>showToast("GPS পাওয়া যায়নি। অনুমতি ও অবস্থান পরীক্ষা করুন।","error"),{enableHighAccuracy:true,timeout:12000});
+});
+
+/* ---------------------------
+   11. PASSENGER TIME SUBMISSIONS
+---------------------------- */
+$("#timeForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const item={
+  id:makeId("time"),
+  launch:cleanText($("#timeLaunch").value,80),
+  route:cleanText($("#timeRoute").value,180),
+  departure:$("#departTime").value,
+  arrival:$("#arriveTime").value,
+  date:$("#timeDate").value,
+  note:cleanText($("#timeNote").value,300),
+  approved:false,
+  author:currentUser.displayName,
+  authorUid:currentUser.uid,
+  createdAt:nowIso()
+ };
+ if(!item.launch||!item.route||!item.date){showToast("লঞ্চ, রুট ও তারিখ পূরণ করুন।","error");return;}
+ data.times.push(item);
+ saveData();
+ event.target.reset();
+ showToast("সময় তথ্য জমা হয়েছে। Admin যাচাই করবেন।");
+});
+
+/* ---------------------------
+   12. LEMON REPLACEMENT BANNER
+---------------------------- */
+$("#bannerForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const item={
+  id:makeId("banner"),
+  route:cleanText($("#bannerRoute").value,180),
+  oldLaunch:cleanText($("#bannerOld").value,80),
+  newLaunch:cleanText($("#bannerNew").value,80),
+  date:$("#bannerDate").value,
+  reason:cleanText($("#bannerReason").value,180),
+  status:"pending",
+  author:currentUser.displayName,
+  authorUid:currentUser.uid,
+  createdAt:nowIso()
+ };
+ if(!item.route||!item.oldLaunch||!item.newLaunch||!item.date){showToast("সব প্রয়োজনীয় ঘর পূরণ করুন।","error");return;}
+ data.banners.push(item);
+ saveData();
+ event.target.reset();
+ showToast("বিকল্প লঞ্চের নোটিশ জমা হয়েছে; অনুমোদনের পর ব্যানারে দেখাবে।");
+});
+
+/* ---------------------------
+   13. REPORT RATE LIMIT
+---------------------------- */
+$("#reportForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const message=cleanText($("#reportMessage").value,500);
+ const elapsed=Date.now()-(data.lastReportAt||0);
+ if(message.length<5){showToast("রিপোর্টে কমপক্ষে ৫ অক্ষর লিখুন।","error");return;}
+ if(message.length>500){showToast("রিপোর্ট সর্বোচ্চ ৫০০ অক্ষর।","error");return;}
+ if(elapsed<30000){showToast("একটু অপেক্ষা করে আবার রিপোর্ট পাঠান (৩০ সেকেন্ড)।","warning");return;}
+ data.reports.push({
+  id:makeId("report"),
+  type:$("#reportType").value,
+  message,
+  status:"pending",
+  author:currentUser.displayName,
+  authorUid:currentUser.uid,
+  createdAt:nowIso()
+ });
+ data.lastReportAt=Date.now();
+ saveData();
+ event.target.reset();
+ showToast("রিপোর্ট জমা হয়েছে।");
+});
+
+/* ---------------------------
+   14. COMMUNITY CHAT
+---------------------------- */
+$("#chatForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const message=cleanText($("#chatMessage").value,500);
+ if(message.length<2){showToast("বার্তা লিখুন।","error");return;}
+ if(Date.now()-(data.lastChatAt||0)<5000){showToast("বার্তা পাঠানোর আগে একটু অপেক্ষা করুন।","warning");return;}
+ data.chats.push({
+  id:makeId("chat"),
+  room:$("#chatRoom").value,
+  message,
+  author:currentUser.displayName,
+  authorUid:currentUser.uid,
+  createdAt:nowIso()
+ });
+ data.lastChatAt=Date.now();
+ saveData();
+ event.target.reset();
+ showToast("বার্তা জমা হয়েছে।");
+});
+
+/* ---------------------------
+   15. ADMIN DEMO MODE
+---------------------------- */
+function setAdminMode(enabled){
+ isDemoAdmin=Boolean(enabled);
+ document.body.classList.toggle("admin-mode",isDemoAdmin);
+ currentUser.isAdmin=isDemoAdmin || ADMIN_UIDS.includes(currentUser.uid);
+ setText("#adminStatus",currentUser.isAdmin?"Admin মোড চালু":"প্রবেশ সীমাবদ্ধ");
+ renderAdmin();
+}
+
+$("#demoAdminLogin").addEventListener("click",()=>{
+ if($("#adminCode").value==="DEMO-ADMIN-2026"){
+  setAdminMode(true);
+  showToast("লোকাল ডেমো Admin মোড চালু হয়েছে।","warning");
+ }else{
+  showToast("ডেমো কোড সঠিক নয়।","error");
+ }
+});
+
+$("#adminLogout").addEventListener("click",()=>{
+ setAdminMode(false);
+ $("#adminCode").value="";
+ showToast("Admin মোড বন্ধ হয়েছে।");
+});
+
+function requireAdmin(){
+ if(!currentUser.isAdmin){
+  showToast("এই কাজের জন্য Admin অনুমতি প্রয়োজন।","error");
+  return false;
+ }
+ return true;
+}
+
+/* ---------------------------
+   16. ADMIN REVIEW QUEUES
+---------------------------- */
+function renderAdmin(){
+ const pending=data.proposals.filter(item=>item.status==="pending");
+ const pendingGhats=data.ghatProposals.filter(item=>item.status==="pending");
+ $("#pendingList").innerHTML=pending.length?pending.map(item=>`
+  <article class="list-item">
+   <h3>${escapeHtml(item.name)}</h3>
+   <div class="meta">${escapeHtml(item.route||"রুট দেওয়া হয়নি")}</div>
+   <div class="meta">${escapeHtml(item.details||"")}</div>
+   <div class="btn-row">
+    <button class="btn green small" data-approve-launch="${item.id}">অনুমোদন</button>
+    <button class="btn red small" data-reject-launch="${item.id}">বাতিল</button>
+   </div>
+  </article>`).join(""):`<div class="empty">কোনো লঞ্চ প্রস্তাব অপেক্ষায় নেই।</div>`;
+ $("#pendingGhats").innerHTML=pendingGhats.length?pendingGhats.map(item=>`
+  <article class="list-item">
+   <h3>${escapeHtml(item.name)}</h3><div class="meta">${escapeHtml(item.area)}</div>
+   <div class="meta">${escapeHtml(item.details||"")}</div>
+   <div class="meta">${item.lat?`${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`:"GPS নেই"}</div>
+   <div class="btn-row">
+    <button class="btn green small" data-approve-ghat="${item.id}">অনুমোদন</button>
+    <button class="btn red small" data-reject-ghat="${item.id}">বাতিল</button>
+   </div>
+  </article>`).join(""):`<div class="empty">কোনো ঘাট প্রস্তাব অপেক্ষায় নেই।</div>`;
+ const pendingRoutes=data.routeProposals.filter(item=>item.status==="pending");
+ $("#pendingRoutes").innerHTML=pendingRoutes.length?pendingRoutes.map(item=>`
+  <article class="list-item"><h3>${escapeHtml(item.from)} → ${escapeHtml(item.to)}</h3>
+   <div class="meta">${escapeHtml(item.details||"")}</div><div class="meta">প্রস্তাবকারী: ${escapeHtml(item.author||"")}</div>
+   <div class="btn-row"><button class="btn green small" data-approve-route="${item.id}">অনুমোদন</button><button class="btn red small" data-reject-route="${item.id}">বাতিল</button></div>
+  </article>`).join(""):`<div class="empty">কোনো রুট প্রস্তাব অপেক্ষায় নেই।</div>`;
+ $("#adminReports").innerHTML=data.reports.length?data.reports.slice(-20).reverse().map(item=>`
+  <article class="list-item"><b>${escapeHtml(item.type)}</b><div>${escapeHtml(item.message)}</div><div class="meta">${escapeHtml(item.author)}</div></article>`).join(""):`<div class="empty">কোনো রিপোর্ট নেই।</div>`;
+ const pendingTimes=data.times.filter(item=>!item.approved);
+ $("#adminTimes").innerHTML=pendingTimes.length?pendingTimes.map(item=>`
+  <article class="list-item">
+   <b>${escapeHtml(item.launch)}</b><div class="meta">${escapeHtml(item.route)} · ${formatDate(item.date)}</div>
+   <div class="meta">${escapeHtml(item.departure||"সময় নেই")} → ${escapeHtml(item.arrival||"সময় নেই")}</div>
+   <button class="btn green small" data-approve-time="${item.id}">শিডিউল অনুমোদন</button>
+  </article>`).join(""):`<div class="empty">যাচাইয়ের জন্য সময়ের তথ্য নেই।</div>`;
+}
+
+document.addEventListener("click",event=>{
+ const target=event.target;
+ if(target.dataset.approveLaunch){
+  if(!requireAdmin()) return;
+  const item=data.proposals.find(row=>row.id===target.dataset.approveLaunch);
+  if(!item) return;
+  const existing=data.launches.find(row=>row.name.toLowerCase()===item.name.toLowerCase());
+  if(existing && item.route) existing.route=item.route;
+  if(!existing) data.launches.push({id:makeId("launch"),name:item.name,route:item.route,status:"approved",source:"community",createdAt:nowIso()});
+  item.status="approved";
+  saveData();showToast("লঞ্চ প্রস্তাব অনুমোদিত হয়েছে।");
+ }
+ if(target.dataset.rejectLaunch){
+  if(!requireAdmin()) return;
+  const item=data.proposals.find(row=>row.id===target.dataset.rejectLaunch);
+  if(item)item.status="rejected";
+  saveData();
+ }
+ if(target.dataset.approveGhat){
+  if(!requireAdmin()) return;
+  const item=data.ghatProposals.find(row=>row.id===target.dataset.approveGhat);
+  if(!item)return;
+  data.ghats.push({id:makeId("ghat"),name:item.name,area:item.area,status:"approved",lat:item.lat,lng:item.lng,createdAt:nowIso()});
+  item.status="approved";
+  saveData();showToast("ঘাট যাচাই করে প্রকাশ করা হয়েছে।");
+ }
+ if(target.dataset.rejectGhat){
+  if(!requireAdmin()) return;
+  const item=data.ghatProposals.find(row=>row.id===target.dataset.rejectGhat);
+  if(item)item.status="rejected";
+  saveData();
+ }
+ if(target.dataset.approveRoute){
+  if(!requireAdmin()) return;
+  const item=data.routeProposals.find(row=>row.id===target.dataset.approveRoute);
+  if(!item)return;
+  data.routes.push({id:makeId("route"),from:item.from,to:item.to,status:"approved",source:"community",createdAt:nowIso()});
+  item.status="approved";saveData();showToast("রুট অনুমোদন করে প্রকাশ করা হয়েছে।");
+ }
+ if(target.dataset.rejectRoute){
+  if(!requireAdmin()) return;
+  const item=data.routeProposals.find(row=>row.id===target.dataset.rejectRoute);
+  if(item)item.status="rejected";
+  saveData();showToast("রুট প্রস্তাব বাতিল করা হয়েছে।");
+ }
+ if(target.dataset.approveTime){
+  if(!requireAdmin()) return;
+  const item=data.times.find(row=>row.id===target.dataset.approveTime);
+  if(!item)return;
+  item.approved=true;
+  const user=data.users.find(row=>row.uid===item.authorUid);
+  if(user){
+   user.points=(user.points||0)+5;
+   user.approvedPosts=(user.approvedPosts||0)+1;
+  }
+  saveData();showToast("সময় তথ্য অনুমোদিত; ৫ পয়েন্ট যোগ হয়েছে।");
+ }
+});
+
+/* ---------------------------
+   17. LEADERBOARD POINTS
+---------------------------- */
+function awardPoints(uid,amount,reason){
+ const user=data.users.find(item=>item.uid===uid);
+ if(!user)return;
+ user.points=(user.points||0)+amount;
+ data.points.push({id:makeId("point"),uid,amount,reason,createdAt:nowIso()});
+}
+
+/* ---------------------------
+   18. MAP INITIALIZATION
+---------------------------- */
+function initMap(){
+ if(map || !window.L) return;
+ const mapNode=$("#map");
+ if(!mapNode)return;
+ map=L.map(mapNode).setView([23.5,90.3],7);
+ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  maxZoom:19,
+  attribution:"&copy; OpenStreetMap contributors"
+ }).addTo(map);
+ renderMapMarkers();
+}
+
+function clearMapMarkers(){
+ mapMarkers.forEach(marker=>marker.remove());
+ mapMarkers=[];
+}
+
+function renderMapMarkers(){
+ if(!map)return;
+ clearMapMarkers();
+ data.ghats.filter(item=>item.status==="approved"&&Number.isFinite(item.lat)&&Number.isFinite(item.lng)).forEach(item=>{
+  const marker=L.marker([item.lat,item.lng]).addTo(map);
+  marker.bindPopup(`<b>${escapeHtml(item.name)}</b><br>${escapeHtml(item.area||"")}`);
+  mapMarkers.push(marker);
+ });
+ data.gpsSessions.filter(item=>Date.now()-item.updatedAt<GPS_EXPIRY_MS).forEach(item=>{
+  const marker=L.circleMarker([item.lat,item.lng],{radius:8,color:"#0b638d"}).addTo(map);
+  marker.bindPopup(`<b>${escapeHtml(item.launch)}</b><br>${escapeHtml(item.route)}<br>যাত্রী লোকেশন`);
+  mapMarkers.push(marker);
+ });
+}
+
+$("#refreshMap").addEventListener("click",()=>{
+ initMap();
+ renderMapMarkers();
+ showToast("ম্যাপ আপডেট হয়েছে।");
+});
+
+$("#locateMe").addEventListener("click",()=>{
+ if(!navigator.geolocation){showToast("GPS সুবিধা নেই।","error");return;}
+ navigator.geolocation.getCurrentPosition(position=>{
+  initMap();
+  const lat=position.coords.latitude;
+  const lng=position.coords.longitude;
+  map.setView([lat,lng],14);
+  L.marker([lat,lng]).addTo(map).bindPopup("আপনার বর্তমান অবস্থান").openPopup();
+ },()=>showToast("আপনার অবস্থান পাওয়া যায়নি।","error"),{enableHighAccuracy:true,timeout:12000});
+});
+
+/* ---------------------------
+   19. GPS SHARING
+---------------------------- */
+function updateGpsStatus(message){
+ setText("#gpsShareStatus",message);
+}
+
+function startGpsSharing(){
+ const launch=cleanText($("#gpsLaunch").value,80);
+ const route=cleanText($("#gpsRoute").value,180);
+ if(!launch||!route){showToast("লঞ্চের নাম ও রুট লিখুন।","error");return;}
+ if(!navigator.geolocation){showToast("এই ডিভাইসে GPS পাওয়া যায়নি।","error");return;}
+ if(gpsWatchId!==null){showToast("লোকেশন শেয়ার আগে থেকেই চালু আছে।","warning");return;}
+ updateGpsStatus("GPS অনুমতি চাওয়া হচ্ছে...");
+ gpsWatchId=navigator.geolocation.watchPosition(position=>{
+  const session={
+   id:currentUser.uid,
+   uid:currentUser.uid,
+   launch,
+   route,
+   lat:position.coords.latitude,
+   lng:position.coords.longitude,
+   updatedAt:Date.now()
+  };
+  const index=data.gpsSessions.findIndex(item=>item.uid===currentUser.uid);
+  if(index>=0)data.gpsSessions[index]=session;
+  else data.gpsSessions.push(session);
+  currentGps={lat:session.lat,lng:session.lng};
+  saveData();
+  initMap();
+  map.setView([session.lat,session.lng],13);
+  updateGpsStatus(`লোকেশন শেয়ার চলছে · ${session.lat.toFixed(4)}, ${session.lng.toFixed(4)}`);
+ },error=>{
+  stopGpsSharing();
+  updateGpsStatus("GPS পাওয়া যায়নি বা অনুমতি দেওয়া হয়নি।");
+  showToast("GPS সমস্যা: "+error.message,"error");
+ },{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+ showToast("লোকেশন শেয়ার চালু হয়েছে।");
+}
+
+function stopGpsSharing(){
+ if(gpsWatchId!==null){
+  navigator.geolocation.clearWatch(gpsWatchId);
+  gpsWatchId=null;
+ }
+ data.gpsSessions=data.gpsSessions.filter(item=>item.uid!==currentUser.uid);
+ saveData();
+ updateGpsStatus("লোকেশন শেয়ার বন্ধ আছে।");
+}
+
+$("#startGpsShare").addEventListener("click",startGpsSharing);
+$("#stopGpsShare").addEventListener("click",stopGpsSharing);
+window.addEventListener("beforeunload",()=>{
+ if(gpsWatchId!==null) navigator.geolocation.clearWatch(gpsWatchId);
+});
+
+/* ---------------------------
+   20. LOCAL DATA EXPORT / IMPORT
+---------------------------- */
+$("#exportData").addEventListener("click",()=>{
+ if(!requireAdmin())return;
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=`launch-tracker-backup-${new Date().toISOString().slice(0,10)}.json`;
+ link.click();
+ URL.revokeObjectURL(url);
+});
+
+$("#importData").addEventListener("change",async event=>{
+ if(!requireAdmin())return;
+ const file=event.target.files?.[0];
+ if(!file)return;
+ try{
+  const parsed=JSON.parse(await file.text());
+  if(!parsed || !Array.isArray(parsed.launches) || !Array.isArray(parsed.ghats)) throw new Error("ব্যাকআপ ফাইল সঠিক নয়।");
+  data={...structuredClone(defaultData),...parsed};
+  saveData();
+  showToast("ব্যাকআপ ইমপোর্ট হয়েছে।");
+ }catch(error){showToast(error.message,"error");}
+ event.target.value="";
+});
+
+$("#resetLocal").addEventListener("click",()=>{
+ if(!requireAdmin())return;
+ if(!confirm("এই ডিভাইসের সব স্থানীয় পরিবর্তন মুছে যাবে। চালাবেন?"))return;
+ data=structuredClone(defaultData);
+ saveData();
+ showToast("লোকাল ডেটা রিসেট হয়েছে।","warning");
+});
+
+/* ---------------------------
+   21. LOGIN MODAL / GUEST MODE
+---------------------------- */
+function showLoginModal(){
+ $("#loginModal").classList.add("show");
+}
+function hideLoginModal(){
+ $("#loginModal").classList.remove("show");
+}
+$("#loginBtn").addEventListener("click",showLoginModal);
+$$("[data-close]").forEach(button=>button.addEventListener("click",()=>$("#"+button.dataset.close).classList.remove("show")));
+$("#guestContinue").addEventListener("click",()=>{
+ hideLoginModal();
+ showToast("অতিথি হিসেবে চালু হয়েছে।","warning");
+});
+
+/* ---------------------------
+   22. PWA INSTALL PROMPT
+---------------------------- */
+window.addEventListener("beforeinstallprompt",event=>{
+ event.preventDefault();
+ deferredInstallPrompt=event;
+ $("#installBtn").classList.remove("hidden");
+});
+$("#installBtn").addEventListener("click",async()=>{
+ if(!deferredInstallPrompt){
+  showToast("ইনস্টল অপশন পাওয়া যাচ্ছে না। Chrome মেনু থেকে Add to Home screen চেষ্টা করুন।","warning");
+  return;
+ }
+ deferredInstallPrompt.prompt();
+ await deferredInstallPrompt.userChoice;
+ deferredInstallPrompt=null;
+});
+
+/* ---------------------------
+   23. FIREBASE MODULE HOOKS
+   Real multi-user mode is enabled only after config.
+---------------------------- */
+let firebaseApp=null;
+let firebaseAuth=null;
+let firebaseDb=null;
+let firebaseModules=null;
+
+async function initializeFirebase(){
+ if(!FIREBASE_READY){
+  $("#connectionPill").textContent="● লোকাল মোড";
+  return false;
+ }
+ try{
+  const appModule=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");
+  const authModule=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js");
+  const dbModule=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js");
+  firebaseModules={...appModule,...authModule,...dbModule};
+  firebaseApp=appModule.initializeApp(firebaseConfig);
+  firebaseAuth=authModule.getAuth(firebaseApp);
+  firebaseDb=dbModule.getDatabase(firebaseApp);
+  authModule.onAuthStateChanged(firebaseAuth,async user=>{
+   if(user){
+    currentUser={
+     uid:user.uid,
+     displayName:user.displayName||user.email||"ব্যবহারকারী",
+     email:user.email||"",
+     isAdmin:ADMIN_UIDS.includes(user.uid)
+    };
+    $("#userPill").textContent=currentUser.displayName;
+    setAdminMode(currentUser.isAdmin);
+    await syncFromFirebase();
+   }else{
+    currentUser={uid:"guest-local",displayName:"অতিথি ব্যবহারকারী",email:"",isAdmin:false};
+    $("#userPill").textContent=currentUser.displayName;
+   }
+  });
+  $("#connectionPill").textContent="● Firebase প্রস্তুত";
+  return true;
+ }catch(error){
+  console.error("Firebase init error",error);
+  $("#connectionPill").textContent="● Firebase সংযোগ হয়নি";
+  showToast("Firebase চালু করা যায়নি। Config ও Rules পরীক্ষা করুন।","error");
+  return false;
+ }
+}
+
+async function signInWithGoogle(){
+ if(!firebaseAuth||!firebaseModules){
+  $("#loginMessage").textContent="Firebase Config বসানো হয়নি। আপাতত অতিথি মোড ব্যবহার করুন।";
+  showToast("Google Login চালু করতে Firebase Config প্রয়োজন।","warning");
+  return;
+ }
+ try{
+  const provider=new firebaseModules.GoogleAuthProvider();
+  await firebaseModules.signInWithPopup(firebaseAuth,provider);
+  hideLoginModal();
+ }catch(error){
+  showToast("লগইন ব্যর্থ: "+error.message,"error");
+ }
+}
+$("#googleLogin").addEventListener("click",signInWithGoogle);
+
+/* ---------------------------
+   24. FIREBASE REALTIME SYNC
+---------------------------- */
+async function syncFromFirebase(){
+ if(!firebaseDb||!firebaseModules||!currentUser.uid||currentUser.uid==="guest-local")return;
+ try{
+  const ref=firebaseModules.ref(firebaseDb,"publicData");
+  firebaseModules.onValue(ref,snapshot=>{
+   const remote=snapshot.val();
+   if(remote){
+    data={...structuredClone(defaultData),...remote};
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    renderAll();
+   }
+  });
+ }catch(error){
+  console.error("Realtime sync failed",error);
+ }
+}
+
+async function pushToFirebase(){
+ if(!firebaseDb||!firebaseModules)return false;
+ if(!currentUser.uid||currentUser.uid==="guest-local")return false;
+ try{
+  const ref=firebaseModules.ref(firebaseDb,"publicData");
+  await firebaseModules.set(ref,data);
+  return true;
+ }catch(error){
+  console.error("Firebase write failed",error);
+  showToast("অনলাইন সিঙ্ক হয়নি। Firebase Rules পরীক্ষা করুন।","error");
+  return false;
+ }
+}
+
+/* Save locally always; attempt remote sync if signed in. */
+const originalSaveData=saveData;
+saveData=function(){
+ originalSaveData();
+ if(FIREBASE_READY && firebaseDb && currentUser.uid!=="guest-local"){
+  pushToFirebase();
+ }
+};
+
+/* ---------------------------
+   25. FIREBASE SECURITY NOTES
+   Enforce Admin UID in Realtime Database Rules.
+---------------------------- */
+const suggestedDatabaseRules={
+ rules:{
+  ".read":"auth != null",
+  ".write":"auth != null",
+  "admin":{
+   "$uid":{
+    ".write":"auth != null && auth.uid === $uid"
+   }
+  }
+ }
+};
+
+/* ---------------------------
+   26. APP INITIALIZATION
+---------------------------- */
+function initializeDateDefaults(){
+ const today=new Date().toISOString().slice(0,10);
+ ["timeDate","bannerDate"].forEach(id=>{
+  const input=$("#"+id);
+  if(input) input.value=today;
+ });
+}
+
+function cleanupExpiredGps(){
+ const cutoff=Date.now()-GPS_EXPIRY_MS;
+ data.gpsSessions=data.gpsSessions.filter(item=>(item.updatedAt||0)>cutoff);
+}
+
+function initializeApp(){
+ cleanupExpiredGps();
+ initializeDateDefaults();
+ renderAll();
+ initializeFirebase();
+ $("#loginBtn").textContent="লগইন";
+}
+
+initializeApp();
+
+/* ---------------------------
+   27. ACCESSIBILITY / KEYBOARD
+---------------------------- */
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape"){
+  $$(".modal-backdrop.show").forEach(modal=>modal.classList.remove("show"));
+ }
+});
+
+$("#loginModal").addEventListener("click",event=>{
+ if(event.target.id==="loginModal") hideLoginModal();
+});
+
+/* ---------------------------
+   28. SERVICE WORKER REGISTRATION
+---------------------------- */
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("./sw.js").catch(error=>console.warn("SW registration failed",error));
+ });
+}
+
+/* ---------------------------
+   29. DEVELOPMENT DIAGNOSTICS
+---------------------------- */
+window.BLT_DEBUG={
+ getVersion:()=>APP_VERSION,
+ getLaunchCount:()=>data.launches.length,
+ getGhatCount:()=>data.ghats.length,
+ getData:()=>structuredClone(data),
+ isFirebaseConfigured:()=>FIREBASE_READY
+};
+
+/* ---------------------------
+   30. END OF APPLICATION SCRIPT
+---------------------------- */
+</script>
+</body>
+</html>
+
+<!--
+
+DATA MODEL
+==========
+- launches: id, name, route, status, source, createdAt. Launch names and route labels are preserved as user-submitted text.
+- ghats: id, name, area, status, optional latitude and longitude, createdAt.
+- proposals: pending launch name and route submissions awaiting review.
+- ghatProposals: pending ghat submissions including optional GPS coordinates.
+- times: passenger-submitted departure and arrival time, route, date, and moderation status.
+- banners: replacement-launch notice with route, old launch, replacement launch, effective date, and moderation status.
+- reports: correction and bug reports with 5 to 500 character validation and client-side rate limiting.
+- chats: topic-based community messages. Production deployment must add moderation and abuse controls.
+- gpsSessions: temporary passenger GPS records. The local prototype expires records after twenty minutes.
+- users: user display names, points, and approved-post counts.
+- points: audit-like local entries for points granted to approved schedule contributions.
+
+FEATURE NOTES
+=============
+- All time fields are submitted by passengers; the seed data contains no preset departure or arrival times.
+- The lemon banner is intended to communicate: এই রুটে এই লঞ্চের জায়গায় আজকে এই লঞ্চ যাবে.
+- Unknown routes should remain unknown. Do not invent a route when source information does not provide one.
+- New launch and ghat proposals are queued for review instead of being published immediately.
+- Only approved schedule submissions should grant leaderboard points.
+- Admin review actions in this prototype are local demo actions. They are not secure until Firebase Authentication and database rules are configured.
+- Google login is implemented as a Firebase module hook but requires a real Firebase web config and enabled Google provider.
+- Realtime sync is implemented against a publicData node for demonstration. Before production, replace broad writes with per-user submissions and trusted server-side moderation.
+- GPS sharing requires explicit user action and browser geolocation permission. The prototype uses browser watchPosition and local data only.
+- Leaflet and OpenStreetMap tiles require an internet connection.
+- Offline/PWA support requires the manifest and service worker files included in the ZIP.
+
+PRODUCTION SECURITY CHECKLIST
+=============================
+- Create a Firebase project and register a Web App.
+- Enable Google Authentication provider in Firebase Authentication.
+- Create a Realtime Database in the intended region.
+- Paste the Firebase Web App config into firebaseConfig in index.html.
+- Sign in once and copy the authenticated UID from Firebase Authentication.
+- Put only the owner's UID in ADMIN_UIDS. Do not use an email-only admin check.
+- Write strict Realtime Database Rules. Do not deploy the broad example rules in this prototype as production security.
+- Move moderation, point awards, and admin-only writes to trusted server functions or rules that verify admin claims.
+- Use per-user submissions and validated fields instead of allowing every signed-in user to overwrite publicData.
+- Set Firebase App Check and appropriate quotas before public launch.
+- Add a privacy notice and explain GPS location visibility and retention before enabling public location sharing.
+
+KNOWN LIMITATIONS
+=================
+- This ZIP is a substantial single-file prototype, not a fully production-secure multi-user service.
+- Without Firebase config, Google login and cross-device synchronization are not active.
+- The demo admin code is visible in source and is not a real security boundary.
+- LocalStorage data is stored only in the current browser/device and may be cleared by the browser.
+- Leaderboard points in this prototype are awarded locally when an Admin demo approves a schedule.
+- GPS sessions are local to this browser and are not visible to other devices until a secure backend is configured.
+- Map pins appear only for approved ghats with GPS coordinates or local GPS sessions.
+- Some seed route labels are approximate or explicitly marked for verification where source route details were incomplete.
+- Launch names from the source have been normalized into Bengali spellings where the source used transliteration or mixed spellings.
+- Verify each launch and ghat with operators or official sources before publishing public schedules.
+
+END OF IMPLEMENTATION NOTES
+-->
+
+<!-- IN-FILE IMPLEMENTATION REFERENCE
+
+01. Application architecture overview
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+02. Navigation and responsive layout
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+03. Form validation strategy
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+04. Safe HTML escaping
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+05. Local persistence lifecycle
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+06. Seed launch data conventions
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+07. Seed ghat data conventions
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+08. Launch proposal moderation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+09. Ghat proposal moderation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+10. Passenger schedule submission
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+11. Replacement launch banner
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+12. Community report moderation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+13. Community chat limitations
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+14. Leaderboard calculation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+15. GPS permission and consent
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+16. GPS session expiry
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+17. Leaflet map rendering
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+18. OpenStreetMap attribution
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+19. Firebase initialization lifecycle
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+20. Google authentication lifecycle
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+21. Realtime database listener
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+22. Realtime database write strategy
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+23. Admin UID allow-list
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+24. Demo administrator warning
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+25. PWA installation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+26. Service worker cache lifecycle
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+27. Backup export
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+28. Backup import
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+29. Local reset confirmation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+30. Mobile navigation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+31. Accessibility keyboard handling
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+32. Error handling
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+33. Production hardening
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+34. Data validation
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+35. Privacy considerations
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+36. Deployment instructions
+   This section is part of the Bangladesh Launch Tracker V2 implementation reference. Review this behavior before extending the application. Validate user input, preserve supplied route names, and do not publish unverified journey details as confirmed facts.
+   Keep the data model consistent across the local interface and the Firebase database. For production use, validate writes on trusted server-side code or strict database rules rather than trusting client-side controls.
+
+END OF IN-FILE IMPLEMENTATION REFERENCE -->

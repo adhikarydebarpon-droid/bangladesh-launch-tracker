@@ -1,0 +1,80 @@
+Bangladesh Launch Tracker — Test Report
+==========================================
+
+Test run: 2026-11-25 (container static test environment)
+
+PASS
+----
+- HTML parser: 109 unique IDs; no duplicate IDs detected.
+- HTML/JavaScript module syntax: passed (Node --check).
+- Cloud Functions JavaScript syntax: passed (Node --check).
+- Firebase Rules JSON syntax: passed (Python JSON parser).
+- firebase.json, manifest, package files and .firebaserc JSON parsing: passed.
+- App branding/version and exact Admin UID/email static checks: passed.
+- Requested launch-name corrections, route labels, and legacy-record filtering: passed.
+- No demo Admin credential static check: passed.
+- GPS transaction lock and expiry implementation static check: passed.
+- Geohash-bounded Nearby query and geohash index static check: passed.
+- Whole-root GPS listener absence static check: passed.
+- Deterministic seed launch ID static check: passed.
+- Daily selection Firebase transaction static check: passed.
+- Cloud Functions endpoint presence static check: passed.
+- Ship marker, heading and nautical-mile conversion static check: passed.
+- Unit/static test suite: 22 passed, 0 failed.
+- ZIP integrity: passed; all archived entries validated by unzip -t.
+
+NOT TESTED / BLOCKED
+--------------------
+- Firebase Rules Emulator compile/runtime test: Firebase CLI/Emulator not installed in this environment.
+- Live Firebase Authentication, Realtime Database reads/writes and callable execution: not performed.
+- Cloud Functions deployment: not performed. The project's Spark plan cannot deploy Cloud Functions; Blaze billing is generally required.
+- Two separate physical Android phones, real GPS, competing lock transaction and live marker movement: not performed.
+- Production Netlify/Firebase Hosting deployment: not performed.
+
+Interpretation
+--------------
+Launch-list change: “সোনার তরী ৩” (ঢাকা ↔ চাঁদপুর) and “জুনায়েদ-৫” (ঢাকা → নড়িয়া) are approved in the app seed list; “জুনায়েদ”, “নাঈম মীম-৭”, and “প্রিন্স সাদিম-৭” are excluded from local/remote launch rendering. Existing legacy “সোনারতরী-৩” records are normalized to the canonical name. The seed list now contains 99 rows before unique-name de-duplication; no unknown launches were invented to force the count back to 102.
+
+This report confirms static/source-level checks only. It does not certify live backend security, deployed availability, or real-device GPS behavior. Do not publish the replacement Database Rules until you have backed up the current Rules/data and tested the schema in Firebase Emulator or a staging project.
+
+2026-11-25 UPDATE — DHAKA DISTANCE
+- Added a live-map popup field showing GPS position to Dhaka reference-point straight-line distance in KM.
+- Added the same approximate distance to Nearby Launches results.
+- Explicitly labels this as a straight-line estimate, not remaining navigable river-route distance; verified route waypoints are not present in this project data.
+- Bumped service-worker cache from the previous shell cache to the next cache version so clients fetch the updated shell.
+- npm test: 15 passed, 0 failed.
+- node --check functions/index.js: passed.
+- Firebase live sync, real GPS on two devices, and Netlify deployment were not tested in this environment.
+
+
+2026-11-26 UPDATE — BIDIRECTIONAL ROUTES AND BENGALI PROPOSALS
+- Seed route rows are expanded into forward and reverse route records using the same launch name and distinct route-specific IDs.
+- Passenger launch proposals require the exact Bengali prefix `এম. ভি. ` and reject Latin letters; server callable repeats this validation before storing and before Admin approval.
+- Route and ghat proposals reject Latin letters with separate Bengali warning messages.
+- Removed the Admin explanatory yellow warning paragraph and the non-essential yellow banner subtitle; Admin authorization and Firebase Rules were not changed.
+- Service worker cache bumped to blt-shell-8.
+
+
+2026-11-26 UPDATE — ALL-ROUTE TRIP SELECTION
+- The passenger schedule form now lists approved routes and shows every approved launch for the chosen route as checkboxes.
+- The schedule form enforces one selected launch per submitted trip; the selected launch and route are saved with the schedule.
+- The selected launch is also saved under dailyLaunchSelections for the selected travel date and exact route, so the map can filter to the selected launch for the current date.
+- Existing route-level quick selection remains available in the launch list.
+- Bidirectional expansion now handles routes with two or more intermediate stops separated by ↔, producing forward and reverse ordered routes.
+- Removed the extra yellow banner subtitle.
+- Updated service-worker cache to blt-shell-9.
+- Static/source checks still do not prove live Firebase writes, two-phone synchronization, or GPS behavior.
+
+Final verification — npm test: 22 passed, 0 failed; JavaScript syntax checks passed; ZIP integrity check passed. Live Firebase, Cloud Functions, multi-device synchronization, and real GPS remain untested.
+
+
+2026-11-26 FINAL CONSOLIDATION
+- Schedule launch selection is now per trip, not merely per route: date + directional route + required departure time.
+- Different departures on the same route (for example 09:00 and 17:00) can each have their own single selected launch.
+- Passengers choose exactly one approved launch with the schedule form checkboxes; the old route-only quick checkbox was removed.
+- Authenticated schedule submissions remain pending until Admin approval. The Admin approval Cloud Function transaction claims the trip and refuses a different launch for the same exact trip.
+- The map only displays GPS sessions for launches selected by an approved trip for the current date. GPS sharing is refused until the trip is approved.
+- Firebase Rules now make dailyLaunchSelections read-only to clients; Admin SDK Cloud Functions write the approved selection.
+- Service worker cache bumped to blt-shell-10.
+- Final verification: npm test 22/22 passed; app and Cloud Functions syntax checks passed; Firebase Rules JSON parses; ZIP integrity passed.
+- NOT LIVE-VERIFIED: updated Cloud Functions/Rules have not been deployed to Firebase; live Auth/Realtime Database, multi-user race handling, and two-device GPS tests remain unperformed. These backend changes must be deployed before relying on cross-device trip selection.
