@@ -1,0 +1,108 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "config": {
+      ".read": false,
+      ".write": false
+    },
+    "launches": {
+      ".read": true,
+      ".write": false
+    },
+    "routes": {
+      ".read": true,
+      ".write": false
+    },
+    "ghats": {
+      ".read": true,
+      ".write": false
+    },
+    "fares": {
+      ".read": true,
+      ".write": false
+    },
+    "proposals": {
+      ".read": "auth != null && auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || (auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true))",
+        "$proposalId": {
+          ".write": false
+        }
+      }
+    },
+    "fareProposals": {
+      ".read": "auth != null && auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || (auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true))",
+        "$fareId": {
+          ".write": false
+        }
+      }
+    },
+    "schedulePosts": {
+      ".read": "auth != null && auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || (auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true))",
+        "$postId": {
+          ".write": false
+        }
+      }
+    },
+    "dailyLaunchSelections": {
+      "$date": {
+        "$routeKey": {
+          ".read": "auth != null",
+          ".write": false
+        },
+        ".read": "auth != null"
+      }
+    },
+    "gpsLocks": {
+      "$launchId": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((newData.exists() && newData.child('uid').val() == auth.uid && newData.child('expiresAt').isNumber() && newData.child('expiresAt').val() > now && newData.child('expiresAt').val() <= now + 120000 && newData.child('updatedAt').isNumber() && newData.child('updatedAt').val() <= now + 10000 && newData.child('updatedAt').val() >= now - 60000 && (!data.exists() || data.child('expiresAt').val() <= now || data.child('uid').val() == auth.uid)) || (!newData.exists() && data.child('uid').val() == auth.uid))",
+        ".validate": "!newData.exists() || newData.hasChildren(['uid','updatedAt','expiresAt'])"
+      }
+    },
+    "gpsSessions": {
+      ".read": "auth != null && query.orderByChild == 'geohash' && query.startAt != null && query.endAt != null",
+      ".indexOn": [
+        "geohash"
+      ],
+      "$launchId": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((newData.exists() && newData.child('uid').val() == auth.uid && newData.child('launchId').val() == $launchId && root.child('gpsLocks').child($launchId).child('uid').val() == auth.uid && root.child('gpsLocks').child($launchId).child('expiresAt').val() > now && newData.child('active').val() == true && newData.child('lat').isNumber() && newData.child('lat').val() >= -90 && newData.child('lat').val() <= 90 && newData.child('lng').isNumber() && newData.child('lng').val() >= -180 && newData.child('lng').val() <= 180 && newData.child('geohash').isString() && newData.child('updatedAt').isNumber() && newData.child('updatedAt').val() <= now + 10000 && newData.child('updatedAt').val() >= now - 60000 && newData.child('expiresAt').isNumber() && newData.child('expiresAt').val() > now && newData.child('expiresAt').val() <= now + 120000) || (!newData.exists() && data.child('uid').val() == auth.uid))",
+        ".validate": "!newData.exists() || newData.hasChildren(['uid','launchId','lat','lng','geohash','updatedAt','expiresAt','active'])"
+      }
+    },
+    "leaderboard": {
+      ".read": true,
+      ".write": false
+    },
+    "points": {
+      ".read": true,
+      ".write": false
+    },
+    "admin": {
+      ".read": "auth != null && auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true",
+      ".write": "auth != null && auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true"
+    },
+    "reports": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || (auth.uid == 'JocEPSTwOYXA4FvhYnf0xox7Lce2' && auth.token.email == 'adhikarydebarpon@gmail.com' && auth.token.email_verified == true))",
+        "$reportId": {
+          ".write": "auth != null && auth.uid == $uid && newData.child('uid').val() == auth.uid"
+        }
+      }
+    },
+    "chat": {
+      "$room": {
+        "$messageId": {
+          ".read": "auth != null",
+          ".write": "auth != null && newData.child('uid').val() == auth.uid && newData.child('message').isString() && newData.child('message').val().length <= 500"
+        }
+      }
+    }
+  }
+}
